@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "habit-tracker"
+version = "0.1.0"
+description = "Telegram habit tracker with FastAPI and PostgreSQL"
+authors = ["Your Name <you@example.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.30.0"}
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.35"}
+asyncpg = "^0.29.0"
+alembic = "^1.13.3"
+pydantic-settings = "^2.5.2"
+pytelegrambotapi = "^4.23.0"
+httpx = "^0.27.2"
+PyJWT = "^2.9.0"
+pwdlib = {extras = ["argon2"], version = "^0.2.0"}
+apscheduler = "^3.10.4"
+email-validator = "^2.2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+pytest-asyncio = "^0.24.0"
+ruff = "^0.6.9"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
