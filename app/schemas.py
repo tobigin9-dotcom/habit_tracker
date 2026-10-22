@@ -1,10 +1,13 @@
 from datetime import date, datetime, time
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class RegisterRequest(BaseModel):
     telegram_id: int = Field(gt=0)
-    display_name: str = Field(default="Telegram user", min_length=1, max_length=120)
+    display_name: str = Field(
+        default="Telegram user", min_length=1, max_length=120
+    )
     password: str = Field(min_length=10, max_length=128)
 
 
@@ -27,7 +30,7 @@ class UserResponse(BaseModel):
 
 
 class HabitCreate(BaseModel):
-    name: str = Field(min_length=1, max_length=160)
+    name: str = Field(min_length=1, max_length=200)
     description: str = Field(default="", max_length=2000)
     goal: str = Field(default="", max_length=255)
     target_completions: int = Field(default=21, ge=1, le=3650)
@@ -36,7 +39,13 @@ class HabitCreate(BaseModel):
     @field_validator("name")
     @classmethod
     def validate_name(cls, value: str) -> str:
-        return value.strip()
+        value = value.strip()
+        if not value:
+            raise ValueError(
+                "Название привычки не может быть "
+                "пустым"
+            )
+        return value
 
 
 class HabitUpdate(BaseModel):

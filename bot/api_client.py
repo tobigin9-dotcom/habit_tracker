@@ -14,7 +14,10 @@ class HabitApiClient:
         token = self.tokens.get(telegram_id)
         return {"Authorization": f"Bearer {token}"} if token else {}
 
-    def request(self, method: str, path: str, telegram_id: int | None = None, **kwargs):
+    def request(
+        self, method: str, path: str,
+        telegram_id: int | None = None, **kwargs
+    ):
         """Send a request to the API and raise readable API errors."""
         headers = kwargs.pop("headers", {})
         if telegram_id is not None:
@@ -31,20 +34,30 @@ class HabitApiClient:
             raise RuntimeError(f"{response.status_code}: {detail}")
         return response.json() if response.content else None
 
-    def register(self, telegram_id: int, display_name: str, password: str) -> str:
-        result = self.request("POST", "/auth/register", json={
-            "telegram_id": telegram_id,
-            "display_name": display_name or "Telegram user",
-            "password": password,
-        })
+    def register(
+        self, telegram_id: int, display_name: str, password: str
+    ) -> str:
+        result = self.request(
+            "POST",
+            "/auth/register",
+            json={
+                "telegram_id": telegram_id,
+                "display_name": display_name or "Telegram user",
+                "password": password,
+            },
+        )
         self.tokens[telegram_id] = result["access_token"]
         return result["access_token"]
 
     def login(self, telegram_id: int, password: str) -> str:
-        result = self.request("POST", "/auth/token", json={
-            "telegram_id": telegram_id,
-            "password": password,
-        })
+        result = self.request(
+            "POST",
+            "/auth/token",
+            json={
+                "telegram_id": telegram_id,
+                "password": password,
+            },
+        )
         self.tokens[telegram_id] = result["access_token"]
         return result["access_token"]
 
@@ -55,14 +68,18 @@ class HabitApiClient:
         return self.request("POST", "/habits", telegram_id, json=data)
 
     def update_habit(self, telegram_id: int, habit_id: int, data: dict):
-        return self.request("PATCH", f"/habits/{habit_id}", telegram_id, json=data)
+        return self.request(
+            "PATCH", f"/habits/{habit_id}", telegram_id, json=data
+        )
 
     def delete_habit(self, telegram_id: int, habit_id: int):
         return self.request("DELETE", f"/habits/{habit_id}", telegram_id)
 
     def complete_habit(self, telegram_id: int, habit_id: int, completed: bool):
         return self.request(
-            "POST", f"/habits/{habit_id}/completion", telegram_id,
+            "POST",
+            f"/habits/{habit_id}/completion",
+            telegram_id,
             json={"is_completed": completed},
         )
 

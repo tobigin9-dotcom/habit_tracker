@@ -1,6 +1,7 @@
 """Create users, habits, completions, and reminder delivery tables."""
-from alembic import op
+
 import sqlalchemy as sa
+from alembic import op
 
 revision = "0001_initial"
 down_revision = None
@@ -23,7 +24,12 @@ def upgrade():
     op.create_table(
         "habits",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("owner_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "owner_id",
+            sa.Integer(),
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         sa.Column("name", sa.String(length=160), nullable=False),
         sa.Column("description", sa.Text(), nullable=False),
         sa.Column("goal", sa.String(length=255), nullable=False),
@@ -37,32 +43,75 @@ def upgrade():
     op.create_table(
         "habit_completions",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("habit_id", sa.Integer(), sa.ForeignKey("habits.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "habit_id",
+            sa.Integer(),
+            sa.ForeignKey("habits.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         sa.Column("completion_date", sa.Date(), nullable=False),
         sa.Column("is_completed", sa.Boolean(), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
-        sa.UniqueConstraint("habit_id", "completion_date", name="uq_habit_day"),
+        sa.UniqueConstraint(
+            "habit_id",
+            "completion_date",
+            name="uq_habit_day",
+        ),
     )
-    op.create_index("ix_habit_completions_habit_id", "habit_completions", ["habit_id"])
-    op.create_index("ix_habit_completions_completion_date", "habit_completions", ["completion_date"])
+    op.create_index(
+        "ix_habit_completions_habit_id",
+        "habit_completions",
+        ["habit_id"],
+    )
+    op.create_index(
+        "ix_habit_completions_completion_date",
+        "habit_completions",
+        ["completion_date"],
+    )
     op.create_table(
         "reminder_deliveries",
         sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("habit_id", sa.Integer(), sa.ForeignKey("habits.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "habit_id",
+            sa.Integer(),
+            sa.ForeignKey("habits.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         sa.Column("reminder_date", sa.Date(), nullable=False),
         sa.Column("sent_at", sa.DateTime(timezone=True), nullable=False),
-        sa.UniqueConstraint("habit_id", "reminder_date", name="uq_reminder_habit_day"),
+        sa.UniqueConstraint(
+            "habit_id",
+            "reminder_date",
+            name="uq_reminder_habit_day",
+        ),
     )
-    op.create_index("ix_reminder_deliveries_habit_id", "reminder_deliveries", ["habit_id"])
-    op.create_index("ix_reminder_deliveries_reminder_date", "reminder_deliveries", ["reminder_date"])
+    op.create_index(
+        "ix_reminder_deliveries_habit_id", "reminder_deliveries", ["habit_id"]
+    )
+    op.create_index(
+        "ix_reminder_deliveries_reminder_date",
+        "reminder_deliveries",
+        ["reminder_date"],
+    )
 
 
 def downgrade():
-    op.drop_index("ix_reminder_deliveries_reminder_date", table_name="reminder_deliveries")
-    op.drop_index("ix_reminder_deliveries_habit_id", table_name="reminder_deliveries")
+    op.drop_index(
+        "ix_reminder_deliveries_reminder_date",
+        table_name="reminder_deliveries",
+    )
+    op.drop_index(
+        "ix_reminder_deliveries_habit_id",
+        table_name="reminder_deliveries",
+    )
     op.drop_table("reminder_deliveries")
-    op.drop_index("ix_habit_completions_completion_date", table_name="habit_completions")
-    op.drop_index("ix_habit_completions_habit_id", table_name="habit_completions")
+    op.drop_index(
+        "ix_habit_completions_completion_date", table_name="habit_completions"
+    )
+    op.drop_index(
+        "ix_habit_completions_habit_id",
+        table_name="habit_completions",
+    )
     op.drop_table("habit_completions")
     op.drop_index("ix_habits_owner_id", table_name="habits")
     op.drop_table("habits")

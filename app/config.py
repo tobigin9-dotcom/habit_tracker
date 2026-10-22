@@ -8,7 +8,9 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    database_url: str = "postgresql+asyncpg://habits_user:password@localhost:5432/habits"
+    database_url: str = (
+        "postgresql+asyncpg://habits_user:password@localhost:5432/habits"
+    )
     jwt_secret_key: str = "development-only-change-this-secret"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 1440
